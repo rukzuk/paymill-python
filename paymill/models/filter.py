@@ -31,3 +31,15 @@ class Filter(object):
             result += self.values[1]
         result = dict([(str(self.key), str(result))])
         return result
+
+
+class FilterList(Filter):
+
+    def __init__(self, *filters):
+        self.filters = filters
+
+    def to_dict(self):
+        combined_dict = dict()
+        for filtr in self.filters:
+            combined_dict.update(filtr.to_dict())
+        return combined_dict
