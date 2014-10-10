@@ -4,6 +4,9 @@ __author__ = 'yalnazov'
 
 class Filter(object):
 
+    class IllegalOperator(Exception):
+        pass
+
     OPERATOR = dict(LESS_THAN="<",
                     GREATER_THAN=">",
                     EQUAL="",
@@ -16,8 +19,10 @@ class Filter(object):
         if values[0] is None:
             raise ValueError('None passed for value to Filter!')
 
-        self.key = key
+        self.key = str(key)
         self.values = values
+        if not operator in self.OPERATOR.values():
+            raise self.IllegalOperator(u"illegal operator %s" % unicode(operator))
         self.operator = operator
 
         if len(self.values) > 1 and self.values[1] is None:
@@ -26,11 +31,18 @@ class Filter(object):
             self.operator = Filter.OPERATOR['INTERVAL']
 
     def to_dict(self):
-        result = str(str(self.values[0]) + self.operator)
-        if len(self.values) > 1 and self.values[1] is not None:
-            result += self.values[1]
-        result = dict([(str(self.key), str(result))])
-        return result
+        result = str(self.values[0]) + self.operator
+        if len(self.values) > 1 and str(self.values[1]) is not None:
+            result += str(self.values[1])
+        return dict([(self.key, result)])
+
+    def __eq__(self, other):
+        if not isinstance(other, Filter):
+            return False
+        return self.to_dict() == other.to_dict()
+
+    def __repr__(self):
+        return str(self.to_dict())
 
 
 class FilterList(Filter):
