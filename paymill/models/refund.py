@@ -107,7 +107,6 @@ class Refund(JsonObject):
             """
             return Filter('amount', values=(amount,), operator=Filter.OPERATOR['LESS_THAN'])
 
-
         @classmethod
         def by_created_at(cls, from_date, to_date=None):
             """Creates and returns an from_date-to_date Filter or from_date Filter for the created_at field
@@ -115,3 +114,4 @@ class Refund(JsonObject):
             :param int to_date:the to_date to filter by
             :return: Filter object
             """
+            return Filter('created_at', values=(from_date, to_date), operator=Filter.OPERATOR['INTERVAL'])
